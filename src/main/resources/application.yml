@@ -1,0 +1,103 @@
+############################# 访问路径、端口tomcat start #############################
+server:
+  port: 8080
+  servlet:
+    context-path: /
+  tomcat:
+    max-threads: 1000
+    min-spare-threads: 30
+    uri-encoding: UTF-8
+############################# 访问路径、端口tomcat end ###############################
+
+################################ spring config start ###############################
+spring:
+  profiles:
+    active: '@profileActive@'
+  application:
+    name: spring-boot-init
+
+  http:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+
+  jackson:
+    default-property-inclusion: NON_NULL # 过滤null属性
+    property-naming-strategy: SNAKE_CASE # 驼峰转为下划线
+    date-format: yyyy-MM-dd HH:mm:ss     # 日期格式化
+    time-zone: GMT+8                     # 时区
+
+  banner:
+    charset: UTF-8
+    location: classpath:banner.txt
+
+# logback-spring.xml中有详细的日志配置
+logging:
+  config: classpath:logback-spring.xml
+  #  方便Spring Boot Admin页面上实时查看日志
+  file:
+    path: logs
+    name: spring-boot-init.log
+
+################################ spring config end #################################
+
+############################### DRUID数据源配置 start ################################
+---
+spring:
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    druid:
+      filter:
+        slf4j:
+          enabled: true
+        stat:
+          log-slow-sql: true
+          merge-sql: true
+          slow-sql-millis: 3000
+        wall:
+          config:
+            delete-allow: true
+            drop-table-allow: false
+          enabled: true
+      filters: stat,wall,slf4j
+      initial-size: 10
+      max-active: 100
+      max-pool-prepared-statement-per-connection-size: 20
+      max-wait: 60000
+      min-evictable-idle-time-millis: 300000
+      min-idle: 10
+      pool-prepared-statements: true
+      stat-view-servlet:
+        enabled: true
+        login-password: druid123
+        login-username: druid
+        url-pattern: /druid/*
+      test-on-borrow: false
+      test-on-return: false
+      test-while-idle: true
+      time-between-eviction-runs-millis: 60000
+      validation-query: SELECT 1
+      validation-query-timeout: 60000
+    type: com.alibaba.druid.pool.DruidDataSource
+############################### DRUID数据源配置 end ################################
+
+############################### mybatis-plus start #################################
+mybatis-plus:
+  # 启动时是否检查MyBatis XML文件是否存在
+  check-config-location: true
+  # MyBatis原生配置
+  configuration:
+    # 字段名称下划线转驼峰命名
+    map-underscore-to-camel-case: true
+  global-config:
+    db-config:
+      # 全局默认主键类型
+      id-type: assign_id
+      # 逻辑已删除值(默认为 1)
+      logic-delete-value: 1
+      # 逻辑未删除值(默认为 0)
+      logic-not-delete-value: 0
+  # mapper xml映射路径
+  mapper-locations: classpath*:mapper/**/*Mapper.xml
+################################ mybatis-plus end ##################################

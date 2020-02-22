@@ -1,78 +1,21 @@
-# 简介
+package tech.mervyn.test;
 
-> spring-boot-init是一个基于SpringBoot2.0，集成了常用开发组件的后台开发框架。
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.core.exceptions.MybatisPlusException;
+import com.baomidou.mybatisplus.core.toolkit.StringPool;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
+import com.baomidou.mybatisplus.generator.AutoGenerator;
+import com.baomidou.mybatisplus.generator.InjectionConfig;
+import com.baomidou.mybatisplus.generator.config.*;
+import com.baomidou.mybatisplus.generator.config.po.TableInfo;
+import com.baomidou.mybatisplus.generator.config.rules.DateType;
+import com.baomidou.mybatisplus.generator.config.rules.NamingStrategy;
+import com.baomidou.mybatisplus.generator.engine.VelocityTemplateEngine;
 
-此项目借鉴于[spring-boot-plus](https://gitee.com/geekidea/spring-boot-plus)
+import java.util.*;
 
-# 主要特性
-
-1. 集成了常用组件，AOP日志等
-2. 集成MybatisPlus，自动生产dao、mapper、service以及controller代码
-3. 集成druid连接池，JDBC性能和慢查询检测
-4. 集成swagger2，自动生成api文档
-5. 集成spring boot admin，实时检测项目运行情况
-6. 持续更新
-
-# 项目环境
-
-依赖 | 版本 | 备注
----- | ---- | ----
-JAVA | 1.8+ | JDK1.8及以上
-SpringBoot | 2.2.4.RELEASE | 最新发布稳定版
-MySql | 5.7+ | 5.7及以上
-
-# 技术选型
-技术 | 版本 | 备注
----- | ---- | ----
-MyBatis Plus | 3.3.1.tmp | MyBatis增强框架
-Alibaba Druid | 1.1.21 | 数据库连接池
-fastjson | 1.2.62 | JSON处理工具
-swagger2 | 2.9.2 | API文档生成工具
-lombok | 1.18.12 | 注解生成Java Bean等工具
-commons-lang3 |	3.9 | 常用工具包
-commons-io | 2.6 | IO工具包
-commons-codec | 1.14 | 加密解密等工具包
-commons-collections4 | 4.4 | 集合工具包
-reflections | 0.9.12 | 反射工具包
-hibernate-validator | 6.1.2.Final | 后台参数校验注解
-mapstruct-jdk8 | 1.3.1.Final | 对象属性复制工具
-
-# 项目部署
-
-# 代码生成
-## 1. 数据库初始化
-```mysql
-DROP TABLE IF EXISTS user;
-
-CREATE TABLE user
-(
-	id BIGINT(20) NOT NULL COMMENT '主键ID',
-	name VARCHAR(30) NULL DEFAULT NULL COMMENT '姓名',
-	age INT(11) NULL DEFAULT NULL COMMENT '年龄',
-	email VARCHAR(50) NULL DEFAULT NULL COMMENT '邮箱',
-	PRIMARY KEY (id)
-);
-
-DELETE FROM user WHERE 1;
-
-INSERT INTO user (id, name, age, email) VALUES
-(1, 'Jone', 18, 'test1@baomidou.com'),
-(2, 'Jack', 20, 'test2@baomidou.com'),
-(3, 'Tom', 28, 'test3@baomidou.com'),
-(4, 'Sandy', 21, 'test4@baomidou.com'),
-(5, 'Billie', 24, 'test5@baomidou.com');
-```
-
-## 2. 自动生成CURD代码
-
-> 1. 修改数据库链接信息，以及作者
-> 2. 根据需求更改配置信息
-
-```java
 /**
  * <p>
- * src/test/java/me/mervyn/test/MyBatisPlusCodeGenerator.java
- * 
  * MyBatis-Plus 的代码生成器，通过 MyBatisPlusCodeGenerator 可以快速生成
  * Entity、Mapper、Mapper XML、Service、Controller 等各个模块的代码
  * </p>
@@ -98,7 +41,10 @@ public class MyBatisPlusCodeGenerator {
         throw new MybatisPlusException("请输入正确的" + tip + "！");
     }
 
-    public static void main(String[] args) {
+    private static AutoGenerator initConfig(String modelName, String tableName) {
+
+        String parent = "tech.mervyn";
+
         // 代码生成器
         AutoGenerator mpg = new AutoGenerator();
 
@@ -126,9 +72,8 @@ public class MyBatisPlusCodeGenerator {
 
         // 包配置
         PackageConfig pc = new PackageConfig();
-        pc.setParent("tech.mervyn");                              // 父包名。如果为空，将下面子包名必须写全部， 否则就只需写子包名
+        pc.setParent(parent);                              // 父包名。如果为空，将下面子包名必须写全部， 否则就只需写子包名
         pc.setModuleName("");                                   // 父包模块名
-        String modelName = scanner("模块名");
         pc.setEntity("dao.entity." + modelName);                // Entity包名
         pc.setMapper("dao.mapper." + modelName);                // Mapper包名
         pc.setService("service." + modelName);                  // Service包名
@@ -142,13 +87,13 @@ public class MyBatisPlusCodeGenerator {
         strategy.setColumnNaming(NamingStrategy.underline_to_camel);    // 数据库表字段映射到实体的命名策略, 未指定按照 naming 执行
         strategy.setEntityLombokModel(true);                            // 是否为lombok模型（默认 false）
         strategy.setEntityBuilderModel(true);                           // 是否为构建者模型（默认 false）
-        strategy.setRestControllerStyle(false);                         // 生成 @RestController 控制器
+        strategy.setRestControllerStyle(true);                         // 生成 @RestController 控制器
         strategy.setControllerMappingHyphenStyle(true);                 // 驼峰转连字符
         strategy.setEntityTableFieldAnnotationEnable(true);             // 是否生成实体时，生成字段注解
-        strategy.setInclude(scanner("表名，多个英文逗号分割").split(","));
+        strategy.setInclude(tableName);
 //        strategy.setTablePrefix("表前缀");                               // 表前缀
 //        strategy.setFieldPrefix("fieldPrefix");                         // 字段前缀
-//        strategy.setSuperEntityClass("你自己的父类实体,没有就不用设置!");
+//        strategy.setSuperEntityClass(parent + ".common.entity.BaseEntity");
 //        strategy.setSuperEntityColumns("id");                           // 自定义基础的Entity类，公共字段
 //        strategy.setSuperMapperClass("");                               // 自定义继承的Mapper类全称，带包名
 //        strategy.setSuperServiceClass("");                              // 自定义继承的Service类全称，带包名
@@ -162,13 +107,25 @@ public class MyBatisPlusCodeGenerator {
             @Override
             public void initMap() {
                 // to do nothing
+                String camelTableName = underlineToCamel(tableName);
+
+                Map<String, Object> map = new HashMap<>();
+                // 实体对象名称
+                map.put("entityObjectName", camelTableName);
+                // service对象名称
+                map.put("serviceObjectName", camelTableName + "Service");
+                // ResponseVo
+                map.put("parent", parent);
+                // model名字
+                map.put("modelName", modelName);
+                this.setMap(map);
             }
         };
 
         // 如果模板引擎是 freemarker
 //        String templatePath = "/templates/mapper.xml.ftl";
         // 如果模板引擎是 velocity
-         String templatePath = "/templates/mapper.xml.vm";
+        String templatePath = "/templates/mapper.xml.vm";
 
         // 自定义输出配置
         List<FileOutConfig> focList = new ArrayList<>();
@@ -190,21 +147,58 @@ public class MyBatisPlusCodeGenerator {
         //指定自定义模板路径，注意不要带上.ftl/.vm, 会根据使用的模板引擎自动识别
         // templateConfig.setEntity("templates/entity2.java");
         // templateConfig.setService();
-        // templateConfig.setController();
+        templateConfig.setController("templates/controller.java");
         templateConfig.setXml(null);
         mpg.setTemplate(templateConfig);
         mpg.setTemplateEngine(new VelocityTemplateEngine());
 
-        mpg.execute();
+        return mpg;
     }
 
+    public static void main(String[] args) {
+
+        String modelName = scanner("模块名");
+        String[] tableNames = scanner("表名，多个英文逗号分割").split(",");
+
+        for (String tableName : tableNames) {
+            AutoGenerator mpg = initConfig(modelName, tableName);
+            mpg.execute();
+        }
+    }
+
+    /**
+     * 下划线转成驼峰命名
+     * sys_user --> sysUser
+     */
+    public static String underlineToCamel(String underline) {
+        if (StringUtils.isNotBlank(underline)) {
+            return NamingStrategy.underlineToCamel(underline);
+        }
+        return null;
+    }
+
+    /**
+     * 下划线转换成帕斯卡命名
+     * sys_user --> SysUser
+     */
+    public static String underlineToPascal(String underline) {
+        if (StringUtils.isNotBlank(underline)) {
+            return NamingStrategy.capitalFirst(NamingStrategy.underlineToCamel(underline));
+        }
+        return null;
+    }
+
+    /**
+     * 下划线转换成冒号连接命名
+     * sys_user --> sys:user
+     */
+    public static String underlineToColon(String underline) {
+        if (StringUtils.isNotBlank(underline)) {
+            String string = underline.toLowerCase();
+            return string.replaceAll("_", ":");
+        }
+        return null;
+    }
+
+
 }
-```
-
-> 运行MyBatisPlusCodeGenerator的main方法
-
-<img src="http://q5wi0ugwv.bkt.clouddn.com/spring-boot-init-01.png"/>
-
-> 生成的代码结构
-
-<img src="http://q5wi0ugwv.bkt.clouddn.com/spring-boot-init-02.png"/>

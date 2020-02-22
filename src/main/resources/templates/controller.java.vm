@@ -1,0 +1,84 @@
+package ${package.Controller};
+
+import ${package.Entity}.${entity};
+import ${package.Service}.${table.serviceName};
+import ${cfg.parent}.common.api.ApiResult;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
+import lombok.extern.slf4j.Slf4j;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+#if(${restControllerStyle})
+#else
+import org.springframework.stereotype.Controller;
+#end
+#if(${superControllerClassPackage})
+import ${superControllerClassPackage};
+#end
+
+/**
+ * <p>
+ * $!{table.comment} 前端控制器123
+ * </p>
+ *
+ * @author ${author}
+ * @since ${date}
+ */
+@Slf4j
+#if(${restControllerStyle})
+@RestController
+#else
+@Controller
+#end
+@RequestMapping("/${cfg.entityObjectName}")
+@Api("$!{table.comment} API")
+#if(${kotlin})
+class ${table.controllerName}#if(${superControllerClass}) : ${superControllerClass}()#end
+
+#else
+#if(${superControllerClass})
+public class ${table.controllerName} extends ${superControllerClass} {
+#else
+public class ${table.controllerName} {
+#end
+
+    private ${table.serviceName} ${cfg.serviceObjectName};
+
+    @Autowired
+    public ${table.controllerName}(${table.serviceName} ${cfg.serviceObjectName}) {
+        this.${cfg.serviceObjectName} = ${cfg.serviceObjectName};
+    }
+
+    @GetMapping("{id}")
+    @ApiOperation(value = "获取${entity}对象详情", notes = "查看$!{table.comment}", response = ${entity}.class)
+    public ResponseEntity<ApiResult> get${entity}(@PathVariable("id") Long id) {
+        ${entity} ${cfg.entityObjectName} = ${cfg.serviceObjectName}.getById(id);
+        return new ResponseEntity<>(new ApiResult(${cfg.entityObjectName}), HttpStatus.OK);
+    }
+
+    @PostMapping()
+    @ApiOperation(value = "添加${entity}对象", notes = "添加$!{table.comment}", response = ApiResult.class)
+    public ResponseEntity<ApiResult> add${entity}(@RequestBody ${entity} ${cfg.entityObjectName}) {
+        boolean res = ${cfg.serviceObjectName}.save(${cfg.entityObjectName});
+        return new ResponseEntity<>(new ApiResult(res), HttpStatus.OK);
+    }
+
+    @PostMapping("{id}")
+    @ApiOperation(value = "修改${entity}对象", notes = "修改$!{table.comment}", response = ApiResult.class)
+    public ResponseEntity<ApiResult> update${entity}(@PathVariable("id") Long id, @RequestBody ${entity} ${cfg.entityObjectName}) {
+        boolean res = ${cfg.serviceObjectName}.updateById(${cfg.entityObjectName});
+        return new ResponseEntity<>(new ApiResult(res), HttpStatus.OK);
+    }
+
+    @DeleteMapping("{id}")
+    @ApiOperation(value = "删除${entity}对象", notes = "删除$!{table.comment}", response = ApiResult.class)
+    public ResponseEntity<ApiResult> delete${entity}(@PathVariable("id") Long id) {
+        boolean res = ${cfg.serviceObjectName}.removeById(id);
+        return new ResponseEntity<>(new ApiResult(res), HttpStatus.OK);
+    }
+
+}
+
+#end
