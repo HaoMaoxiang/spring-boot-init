@@ -25,7 +25,7 @@
     <fastjson.version>1.2.62</fastjson.version>
     <trace-logger.version>0.0.1</trace-logger.version>
     <commons.lang3.version>3.9</commons.lang3.version>
-    <commons.io.version>2.6</commons.io.version>
+    <commons.io.version>2.7</commons.io.version>
     <commoms.codec.version>1.14</commoms.codec.version>
     <commons-collections4.version>4.4</commons-collections4.version>
     <reflections.version>0.9.12</reflections.version>
