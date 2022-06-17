@@ -22,7 +22,7 @@
     <velocity-engine-core.version>2.2</velocity-engine-core.version>
     <swagger2.version>2.9.2</swagger2.version>
     <lombook.version>1.18.12</lombook.version>
-    <fastjson.version>1.2.62</fastjson.version>
+    <fastjson.version>1.2.83</fastjson.version>
     <trace-logger.version>0.0.1</trace-logger.version>
     <commons.lang3.version>3.9</commons.lang3.version>
     <commons.io.version>2.6</commons.io.version>
